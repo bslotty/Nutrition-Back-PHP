@@ -39,8 +39,8 @@ require_once('./models/sql_model.php');
 $modeler = new SQL_Model($database);
 
 //  Set ID on creation
-if ( isset($payload["object"]) ) {
-    if (strtolower($payload["object"]["id"]) == "create") {
+if (isset($payload["object"])) {
+    if (strpos(strtolower($payload["object"]["id"]), "create") != false) {
         $payload["object"]["id"] = $database->generateGUID();
     }
 }
@@ -49,12 +49,12 @@ switch ($action) {
     case "list":
         $return[] = $database->getList();
 
-        switch(strtolower($type)){
+        switch (strtolower($type)) {
             case "meals":
                 require_once("./models/meal.php");
 
                 foreach ($return[0]->data as $i => $m) {
-                    $meal       = new Meal($m["id"], $modeler->database);
+                    $meal = new Meal($m["id"], $modeler->database);
                     $meal->name = $m["name"];
                     $meal->date = $m["date"];
 
@@ -69,22 +69,22 @@ switch ($action) {
         break;
 
     case "detail":
-        $object   = $modeler->FormatFromClient($payload['object'], $type);
+        $object = $modeler->FormatFromClient($payload['object'], $type);
         $return[] = $object->Details($database);
         break;
 
     case "create":
-        $object   = $modeler->FormatFromClient($payload['object'], $type);
+        $object = $modeler->FormatFromClient($payload['object'], $type);
         $return[] = $object->Insert($database);
         break;
 
     case "update":
-        $object   = $modeler->FormatFromClient($payload['object'], $type);
+        $object = $modeler->FormatFromClient($payload['object'], $type);
         $return[] = $object->Update($database);
         break;
 
     case "delete":
-        $object   = $modeler->FormatFromClient($payload['object'], $type);
+        $object = $modeler->FormatFromClient($payload['object'], $type);
         $return[] = $object->Delete($database);
         break;
 
