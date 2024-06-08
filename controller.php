@@ -47,7 +47,9 @@ if (isset($payload["object"])) {
 
 switch ($action) {
     case "list":
-        $return[] = $database->getList();
+        $start = isset($payload["start"]) ? $payload["start"] : 0;
+        $count = isset($payload["count"]) ? $payload["count"] : 10;
+        $return[] = $database->getList($start, $count);
 
         switch (strtolower($type)) {
             case "meals":

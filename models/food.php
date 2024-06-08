@@ -3,16 +3,16 @@
 class Food extends SQL_Model 
 {
     public string $id;
-    public string $name;
-    public string $brand;
-    public int $servingSize;
-    public string $servingSizeMeasurementType;
-    public int $protein;
-    public int $fat;
-    public int $carbs;
-    public int $fiber;
-    public int $sugar;
-    public int $sodium;
+    public ?string $name;
+    public ?string $brand;
+    public ?int $servingSize;
+    public ?string $servingSizeMeasurementType;
+    public ?int $protein;
+    public ?int $fat;
+    public ?int $carbs;
+    public ?int $fiber;
+    public ?int $sugar;
+    public ?int $sodium;
 
 
     public function __construct( DB $database, string $id = "")
@@ -23,16 +23,16 @@ class Food extends SQL_Model
 
     public function ConvertFromClientRequest(array $object)
     {
-        $this->name                       = $object["name"];
-        $this->brand                      = $object["brand"];
-        $this->servingSize                = $object["servingSize"];
-        $this->servingSizeMeasurementType = $object["servingSizeMeasurementType"];
-        $this->protein                    = $object["protein"];
-        $this->fat                        = $object["fat"];
-        $this->carbs                      = $object["carbs"];
-        $this->fiber                      = $object["fiber"];
-        $this->sugar                      = $object["sugar"];
-        $this->sodium                     = $object["sodium"];
+        $this->name                       = $object["name"] ?? null;
+        $this->brand                      = $object["brand"] ?? null;
+        $this->servingSize                = $object["servingSize"] ?? null;
+        $this->servingSizeMeasurementType = $object["servingSizeMeasurementType"] ?? null;
+        $this->protein                    = $object["protein"] ?? null;
+        $this->fat                        = $object["fat"] ?? null;
+        $this->carbs                      = $object["carbs"] ?? null;
+        $this->fiber                      = $object["fiber"] ?? null;
+        $this->sugar                      = $object["sugar"] ?? null;
+        $this->sodium                     = $object["sodium"] ?? null;
     }
 
     public function ToArray(): array

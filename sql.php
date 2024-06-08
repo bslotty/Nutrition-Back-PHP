@@ -133,7 +133,7 @@ class DB
 
 
     //  CRUD
-    public function getList($start = 0, $limit = 500, $filter = null)
+    public function getList($start = 0, $count = 10, $filter = null)
     {
 
         $query = "SELECT ";
@@ -146,7 +146,7 @@ class DB
 
         $query .= "
             FROM `" . $this->table . "`
-            LIMIT " . (int) $start . ", " . (int) $limit . ";";
+            LIMIT " . (int) $start . ", " . (int) $count . ";";
 
 
         //  Where
