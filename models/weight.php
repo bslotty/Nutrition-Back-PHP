@@ -2,7 +2,7 @@
 class Weight extends SQL_Model  {
     public string $id;
     public string $date;
-    public int $pounds;
+    public string $pounds;
 
 
     public function __construct(string $id, DB $database)
