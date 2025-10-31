@@ -66,6 +66,19 @@ switch ($action) {
                 }
                 break;
 
+            case "recipes":
+                require_once("./models/recipe.php");
+
+                foreach ($return[0]->data as $i => $r) {
+                    $recipe = new Recipe($r["id"], $modeler->database);
+                    $recipe->name = $r["name"];
+
+                    $recipe->GetRelated();
+
+                    $return[0]->data[$i] = $recipe;
+                }
+                break;
+
         }
 
         break;

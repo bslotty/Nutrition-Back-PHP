@@ -25,8 +25,8 @@ class Meal extends SQL_Model
         //  Parts
         require_once('./models/part.php');
         foreach ($object["parts"] as $part) {
-            $p = new Part( $this->database, $part["id"]);
-            $p->ConvertFromClientRequest($part, $this);
+            $p = new Part($this->database, $part["id"]);
+            $p->ConvertFromClientRequest($part, $this, "meal");
             $this->parts[] = $p;
         }
 
@@ -55,14 +55,21 @@ class Meal extends SQL_Model
 
     public function GetRelated(): Meal
     {
-        $parts = $this->database->getRelated("Meal_Parts", "meal_id", $this->id);
-        if ($parts->success) {
+        // Query Parts table with parent_id and parent_type filters
+        $this->database->setTable("Parts");
+        $query = "SELECT * FROM `Parts` WHERE `parent_id`=:parent_id AND `parent_type`=:parent_type";
+        $values = array(
+            ":parent_id" => $this->id,
+            ":parent_type" => "meal"
+        );
+        $parts = $this->database->Query($query, $values);
 
+        if ($parts->success) {
             require_once("./models/part.php");
             $this->parts = $parts->data;
             foreach ($this->parts as $pi => $p) {
                 $part = new Part($this->database, $p["id"]);
-                $part->ConvertFromDB($p);
+                $part->ConvertFromDB($p, "meal");
                 $this->parts[$pi] = $part;
             }
         }
@@ -112,14 +119,20 @@ class Meal extends SQL_Model
             return $response;
         }
 
-        //  Delete Related
-        $parts_response = $this->database->deleteRelated("Meal_Parts", "meal_id", $this->id);
+        //  Delete Related - delete from Parts table where parent_id = this meal and parent_type = 'meal'
+        $this->database->setTable("Parts");
+        $query = "DELETE FROM `Parts` WHERE `parent_id`=:parent_id AND `parent_type`=:parent_type";
+        $values = array(
+            ":parent_id" => $this->id,
+            ":parent_type" => "meal"
+        );
+        $parts_response = $this->database->Query($query, $values);
         if (!$parts_response->success) {
             return $parts_response;
         }
 
         //  Create New
-        $this->database->setTable("Meal_Parts");
+        $this->database->setTable("Parts");
         foreach ($this->parts as $pi => $part) {
             $part_response = $part->Insert();
             if (!$part_response->success) {
@@ -134,13 +147,20 @@ class Meal extends SQL_Model
 
     public function Delete(): Response
     {
-        //  Delete Related
-        $parts_response = $this->database->deleteRelated("Meal_Parts", "meal_id", $this->id);
+        //  Delete Related - delete from Parts table where parent_id = this meal and parent_type = 'meal'
+        $this->database->setTable("Parts");
+        $query = "DELETE FROM `Parts` WHERE `parent_id`=:parent_id AND `parent_type`=:parent_type";
+        $values = array(
+            ":parent_id" => $this->id,
+            ":parent_type" => "meal"
+        );
+        $parts_response = $this->database->Query($query, $values);
         if (!$parts_response->success) {
             return $parts_response;
         }
 
-        //  Delete
+        //  Delete Meal
+        $this->database->setTable("Meals");
         $response = $this->database->delete($this->id);
         return $response;
     }
