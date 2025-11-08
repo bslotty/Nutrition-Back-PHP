@@ -1,11 +1,16 @@
 <?php
 class SQL_Model
 {
-    public DB $database;
+    protected DB $database;
 
     public function __construct(DB $database)
     {
         $this->database = $database;
+    }
+
+    public function getDatabase(): DB
+    {
+        return $this->database;
     }
 
     public function FormatFromClient($object, $type): object

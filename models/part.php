@@ -9,7 +9,8 @@ class Part extends SQL_Model
     public string $size;
     public string $unit;
 
-    public Food $food;
+    /** @var Food|Recipe */
+    public $food;
 
 
     public function __construct(DB $database, string $id = "")
@@ -97,7 +98,7 @@ class Part extends SQL_Model
         if ($this->join_type === "recipe") {
             require_once("./models/recipe.php");
             $table = "Recipes";
-            $join_object = new Recipe($this->database, $this->join_id);
+            $join_object = new Recipe($this->join_id, $this->database);
         } else {
             require_once("./models/food.php");
             $table = "Foods";
@@ -105,8 +106,12 @@ class Part extends SQL_Model
         }
 
         $result = $this->database->getRelated($table, "id", $this->join_id);
+
         if ($result->success && isset($result->data[0])) {
-            $join_object->ConvertFromClientRequest($result->data[0]);
+            $data = $result->data[0];
+
+            // For Food objects, ConvertFromClientRequest expects the data and will set all properties
+            $join_object->ConvertFromClientRequest($data);
 
             // If it's a recipe, also get its related parts
             if ($this->join_type === "recipe") {

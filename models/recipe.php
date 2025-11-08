@@ -36,6 +36,7 @@ class Recipe extends SQL_Model
         $array = array(
             "id"   => $this->id,
             "name" => $this->name,
+            "type" => "compound",
         );
 
         // Include parts array for display

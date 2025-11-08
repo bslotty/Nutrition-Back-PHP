@@ -1,7 +1,4 @@
 <?php
-//  Session
-session_start();
-
 //  Headers
 header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, Content-Type, Authorization');
@@ -56,13 +53,14 @@ switch ($action) {
                 require_once("./models/meal.php");
 
                 foreach ($return[0]->data as $i => $m) {
-                    $meal = new Meal($m["id"], $modeler->database);
+                    $meal = new Meal($m["id"], $modeler->getDatabase());
                     $meal->name = $m["name"];
                     $meal->date = $m["date"];
 
                     $meal->GetRelated();
 
-                    $return[0]->data[$i] = $meal;
+                    // Convert to array to exclude database object from response
+                    $return[0]->data[$i] = $meal->ToArray();
                 }
                 break;
 
@@ -70,12 +68,13 @@ switch ($action) {
                 require_once("./models/recipe.php");
 
                 foreach ($return[0]->data as $i => $r) {
-                    $recipe = new Recipe($r["id"], $modeler->database);
+                    $recipe = new Recipe($r["id"], $modeler->getDatabase());
                     $recipe->name = $r["name"];
 
                     $recipe->GetRelated();
 
-                    $return[0]->data[$i] = $recipe;
+                    // Convert to array to exclude database object from response
+                    $return[0]->data[$i] = $recipe->ToArray();
                 }
                 break;
 
@@ -85,7 +84,32 @@ switch ($action) {
 
     case "detail":
         $object = $modeler->FormatFromClient($payload['object'], $type);
-        $return[] = $object->Details($database);
+        $result = $object->Details($database);
+
+        // For recipes and meals, load related data and convert to array
+        switch (strtolower($type)) {
+            case "recipes":
+                require_once("./models/recipe.php");
+                if ($result->success && isset($result->data)) {
+                    $recipe = new Recipe($result->data["id"], $modeler->getDatabase());
+                    $recipe->ConvertFromClientRequest($result->data);
+                    $recipe->GetRelated();
+                    $result->data = $recipe->ToArray();
+                }
+                break;
+
+            case "meals":
+                require_once("./models/meal.php");
+                if ($result->success && isset($result->data)) {
+                    $meal = new Meal($result->data["id"], $modeler->getDatabase());
+                    $meal->ConvertFromClientRequest($result->data);
+                    $meal->GetRelated();
+                    $result->data = $meal->ToArray();
+                }
+                break;
+        }
+
+        $return[] = $result;
         break;
 
     case "create":

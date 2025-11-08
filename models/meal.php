@@ -87,6 +87,7 @@ class Meal extends SQL_Model
         //  Verify Object Properties?
 
         //  Base
+        $this->database->setTable("Meals");
         $this->id = $this->database->generateGUID();
         $this->database->create($this->ToArray());
 

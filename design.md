@@ -2,7 +2,40 @@
 
 ##  Foods
     id (GUID)
-    [all nutrient fields]
+    name
+    brand
+    servingSize
+    servingUnit
+
+    # Macronutrients
+    protein
+    fat
+    carbs
+    fiber
+    sugar
+    sodium
+
+    # Vitamins
+    vitaminA
+    vitaminB1
+    vitaminB2
+    vitaminB3
+    vitaminB5
+    vitaminB6
+    vitaminB7
+    vitaminB9
+    vitaminB12
+    vitaminC
+    vitaminD
+    vitaminE
+    vitaminK
+
+    # Minerals
+    calcium
+    iron
+    magnesium
+    potassium
+    zinc
 
 ##  Meals
     id (GUID)
@@ -16,11 +49,11 @@
 ##  Parts
     id (GUID)
     parent_id (GUID)
-    parent_type (Meal/Recipe GUID)
+    parent_type (Meal/Recipe)
     join_id (GUID)
-    join_id (Recipe/Food GUID)
-    size
-    unit
+    join_type (Recipe/Food)
+    amount
+    amount_type
 
 ##  Exercises
     id (GUID)
